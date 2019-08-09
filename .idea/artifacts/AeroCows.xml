@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="AeroCows">
+    <output-path>$USER_HOME$/OSBot/Scripts</output-path>
+    <root id="archive" name="AeroCows.jar">
+      <element id="library" level="project" name="OSBot 2.5.53" />
+    </root>
+  </artifact>
+</component>
