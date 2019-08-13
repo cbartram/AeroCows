@@ -6,10 +6,10 @@ package constants;
  * http://github.com/cbartram
  */
 public enum Cow {
-    DEFAULT(5854), // TODO verify these as they might not be right
-    MOVING(5851),
-    DYING(5850),
-    IN_COMBAT(5849);
+    IDLE(-1),
+    MOVING(5854),
+    DYING(5851),
+    ATTACKING(5849); // TODO and 5850 is attacking
 
     int animation;
 
