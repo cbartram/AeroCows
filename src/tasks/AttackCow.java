@@ -1,5 +1,6 @@
 package tasks;
 
+import constants.Cow;
 import org.osbot.rs07.api.filter.Filter;
 import org.osbot.rs07.api.model.Entity;
 import org.osbot.rs07.api.model.NPC;
@@ -20,13 +21,13 @@ public class AttackCow extends Task {
 
     @Override
     public boolean activate() {
-        Entity cow = ctx.getNpcs().singleFilter(ctx.getNpcs().getAll(), (Filter<NPC>) npc -> npc.getName().equals("Cow"));
+        NPC cow = ctx.getNpcs().singleFilter(ctx.getNpcs().getAll(), (Filter<NPC>) npc -> npc.getName().equals("Cow"));
         if(cow == null) {
             ctx.log("Cow is null");
             return false;
         }
-        ctx.log("Player under attack: " + ctx.myPlayer().isUnderAttack());
-        return !ctx.myPlayer().isUnderAttack() && !ctx.myPlayer().isMoving(); // && cow animation is not "Dying"
+        ctx.log("Cow animation: " + cow.getAnimation());
+        return !ctx.myPlayer().isUnderAttack() && !ctx.myPlayer().isMoving(); // TODO && cow animation is not "Dying" && cow animation isnt already a cow combat anim
     }
 
     @Override

@@ -52,7 +52,7 @@ public final class AeroCows extends Script {
 	@Override
 	public final void onMessage(final Message message) {
 		if (message.getMessage().equalsIgnoreCase("Someone else is fighting that.")) {
-
+			// We need to find a different cow
 		}
 	}
 
@@ -60,7 +60,7 @@ public final class AeroCows extends Script {
 	public void onPaint(final Graphics2D g) {
 		final long runTime = System.currentTimeMillis() - startTime;
 
-		g.setColor(new Color(120, 111, 100, 10));
+		g.setColor(new Color(120, 111, 100, 70));
 		g.drawRect(0, 0, 140, 140);
 		g.setColor(Color.white);
 
@@ -69,11 +69,11 @@ public final class AeroCows extends Script {
 		g.drawString("Levels Gained: " + getExperienceTracker().getGainedLevels(Skill.DEFENCE), 10, 50);
 		g.drawString("XP Gained: " + getExperienceTracker().getGainedXP(Skill.DEFENCE), 10, 70);
 		g.drawString("XP/Hour: " + getExperienceTracker().getGainedXPPerHour(Skill.DEFENCE), 10, 90);
-		g.drawString("TTL: " + getExperienceTracker().getTimeToLevel(Skill.DEFENCE), 10, 120);
+		g.drawString( "TTL: " + getExperienceTracker().getTimeToLevel(Skill.DEFENCE), 10, 120);
 
-		Point mP = getMouse().getPosition();
+		Point pos = getMouse().getPosition();
 
-		g.drawLine(mP.x - 5, mP.y + 5, mP.x + 5, mP.y - 5);
-		g.drawLine(mP.x + 5, mP.y + 5, mP.x - 5, mP.y - 5);
+		g.drawLine(pos.x - 5, pos.y + 5, pos.x + 5, pos.y - 5);
+		g.drawLine(pos.x + 5, pos.y + 5, pos.x - 5, pos.y - 5);
 	}
 }
