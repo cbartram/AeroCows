@@ -22,15 +22,11 @@ public class AttackCow extends Task {
     @Override
     public boolean activate() {
         NPC cow = ctx.getNpcs().singleFilter(ctx.getNpcs().getAll(), (Filter<NPC>) npc -> npc.getName().equals("Cow"));
-        if(cow == null) {
-            ctx.log("Cow is null");
-            return false;
-        }
+        if(cow == null) return false;
         // Before we click on a new cow lets wait for the previous cow to die and we can collect the hide
         setStatus("Waiting for previous cow to die...");
         new Sleep(() -> true, 3000);
 
-        ctx.log("Cow animation: " + cow.getAnimation());
         return  !ctx.myPlayer().isUnderAttack() &&
                 !ctx.myPlayer().isMoving() &&
                 cow.getAnimation() != Cow.DYING.getAnimation() &&

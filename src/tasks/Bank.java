@@ -2,8 +2,7 @@ package tasks;
 
 import org.osbot.rs07.api.filter.Filter;
 import org.osbot.rs07.api.map.constants.Banks;
-import org.osbot.rs07.api.model.GroundItem;
-import org.osbot.rs07.api.model.Item;
+import org.osbot.rs07.api.model.NPC;
 import org.osbot.rs07.script.MethodProvider;
 
 /**
@@ -22,7 +21,12 @@ public class Bank extends Task {
 //        for(Item i : items) {
 //            i.
 //        }
-       return ctx.getInventory().contains("Cowhide") && ctx.getInventory().getEmptySlotCount() < 20;
+        NPC banker = ctx.getNpcs().singleFilter(ctx.getNpcs().getAll(), (Filter<NPC>) npc -> npc.getName().equalsIgnoreCase("Banker"));
+
+        return ctx.getInventory().contains("Cowhide")
+               && ctx.getInventory().getEmptySlotCount() < 20
+               && !Banks.LUMBRIDGE_UPPER.contains(ctx.myPlayer())
+               && banker == null;
     }
 
     @Override

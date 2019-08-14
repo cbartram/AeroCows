@@ -19,11 +19,16 @@ public class CollectNearbyHide extends Task {
 
     @Override
     public boolean activate() {
-        // First we build an array of tiles around the player
-        GroundItem cowhide = ctx.getGroundItems().singleFilter(ctx.getGroundItems().getAll(), (Filter<GroundItem>) item -> item.getName().equalsIgnoreCase("Cowhide"));
-        if(cowhide == null) return false;
-        // Won't try to collect cowhides while the player is currently in combat or running to collect the cowhide
-        return cowhide.isOnScreen() && !ctx.myPlayer().isUnderAttack() && !ctx.myPlayer().isMoving();
+        return false;
+//        // First we build an array of tiles around the player
+//        GroundItem cowhide = ctx.getGroundItems().closest("Cowhide");
+//        ctx.log("Cowhide exists: " + cowhide != null);
+//        if(cowhide == null) return false;
+//
+//        ctx.log("Cowhide on screen: " + cowhide.isOnScreen());
+//        ctx.log("Player moving: " + ctx.myPlayer().isMoving());
+//        // Won't try to collect cowhides while the player is currently in combat or running to collect the cowhide
+//        return cowhide.isOnScreen() && !ctx.myPlayer().isMoving();
     }
 
     @Override

@@ -15,7 +15,7 @@ public abstract class Task{
     public Task(MethodProvider ctx, String name) {
         this.ctx = ctx;
         this.name = name;
-        this.status = "Initializing tasks.Task " + name; // Default Status
+        this.status = name; // Default Status
     }
 
     public String getName() {

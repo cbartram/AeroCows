@@ -1,12 +1,17 @@
+import org.osbot.rs07.api.filter.Filter;
 import org.osbot.rs07.api.map.Area;
 import org.osbot.rs07.api.map.Position;
+import org.osbot.rs07.api.map.constants.Banks;
+import org.osbot.rs07.api.model.NPC;
 import org.osbot.rs07.api.ui.Message;
 import org.osbot.rs07.api.ui.Skill;
 import org.osbot.rs07.api.util.GraphicUtilities;
 import org.osbot.rs07.script.Script;
 import org.osbot.rs07.script.ScriptManifest;
 import tasks.AttackCow;
+import tasks.Bank;
 import tasks.CollectHide;
+import tasks.DepositHides;
 import tasks.Task;
 import tasks.WalkToCows;
 import util.Util;
@@ -31,6 +36,8 @@ public final class AeroCows extends Script {
 
 		// Add all our tasks to the task list
 		tasks.addAll(Arrays.asList(
+				new DepositHides(this, "Depositing Hides"),
+				new Bank(this, "Banking"),
 				new AttackCow(this,"Attack Cow"),
 				new CollectHide(this, "Collect Hide"),
 				new WalkToCows(this, "Walk to Cows")
@@ -45,7 +52,7 @@ public final class AeroCows extends Script {
 					task.execute();
 				}
 		}
-		status = "In combat waiting...";
+		status = "Waiting...";
 		return random(150, 200);
 	}
 
@@ -85,10 +92,10 @@ public final class AeroCows extends Script {
 		g.drawLine(pos.x - 5, pos.y + 5, pos.x + 5, pos.y - 5);
 		g.drawLine(pos.x + 5, pos.y + 5, pos.x - 5, pos.y - 5);
 
-//		Polygon p = myPosition().getPolygon(bot);
 		g.setColor(Color.CYAN);
 		Area a = myPlayer().getArea(4);
-		for(Position p : a.getPositions()) {
+		Area bank = Banks.LUMBRIDGE_UPPER;
+		for(Position p : bank.getPositions()) {
 			g.drawPolygon(p.getPolygon(bot));
 		}
 	}

@@ -1,6 +1,8 @@
 package tasks;
 
+import org.osbot.rs07.api.filter.Filter;
 import org.osbot.rs07.api.map.Area;
+import org.osbot.rs07.api.model.NPC;
 import org.osbot.rs07.script.MethodProvider;
 
 /**
@@ -11,23 +13,12 @@ import org.osbot.rs07.script.MethodProvider;
 public class WalkToCows extends Task {
     private Area COW_AREA = new Area(
             new int[][]{
-                    { 3240, 3297 },
-                    { 3240, 3294 },
-                    { 3242, 3291 },
-                    { 3239, 3285 },
-                    { 3246, 3277 },
-                    { 3249, 3277 },
-                    { 3251, 3276 },
-                    { 3251, 3273 },
-                    { 3253, 3271 },
-                    { 3253, 3254 },
-                    { 3266, 3254 },
-                    { 3266, 3297 },
-                    { 3263, 3299 },
-                    { 3261, 3299 },
-                    { 3261, 3300 },
-                    { 3256, 3300 },
-                    { 3241, 3299 }
+                    { 3243, 3297 },
+                    { 3243, 3283 },
+                    { 3254, 3273 },
+                    { 3253, 3255 },
+                    { 3265, 3256 },
+                    { 3265, 3297 }
             }
     );
 
@@ -37,7 +28,10 @@ public class WalkToCows extends Task {
 
     @Override
     public boolean activate() {
-        return !COW_AREA.contains(ctx.myPlayer()) && !ctx.myPlayer().isMoving();
+        ctx.getInventory().contains("Cowhide");
+        return !COW_AREA.contains(ctx.myPlayer())
+                && !ctx.myPlayer().isMoving()
+                && !ctx.getInventory().contains("Cowhide");
     }
 
     @Override
