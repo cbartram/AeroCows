@@ -20,7 +20,7 @@ public class Bank extends Task {
         NPC banker = ctx.getNpcs().singleFilter(ctx.getNpcs().getAll(), (Filter<NPC>) npc -> npc.getName().equalsIgnoreCase("Banker"));
 
         return ctx.getInventory().contains("Cowhide")
-               && ctx.getInventory().getEmptySlotCount() < 20
+               && ctx.getInventory().getEmptySlotCount() < 8 // banks at 20 hides
                && !Banks.LUMBRIDGE_UPPER.contains(ctx.myPlayer())
                && banker == null;
     }
