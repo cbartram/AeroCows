@@ -3,9 +3,12 @@ package tasks;
 import constants.Cow;
 import org.osbot.rs07.api.filter.Filter;
 import org.osbot.rs07.api.model.Entity;
+import org.osbot.rs07.api.model.GroundItem;
 import org.osbot.rs07.api.model.NPC;
 import org.osbot.rs07.script.MethodProvider;
 import util.Sleep;
+
+import java.lang.reflect.Method;
 
 /**
  * tasks.AttackCow
@@ -22,25 +25,35 @@ public class AttackCow extends Task {
     @Override
     public boolean activate() {
         NPC cow = ctx.getNpcs().singleFilter(ctx.getNpcs().getAll(), (Filter<NPC>) npc -> npc.getName().equals("Cow"));
+        GroundItem cowhide = ctx.getGroundItems().closest("Cowhide");
+
         if(cow == null) return false;
-        // Before we click on a new cow lets wait for the previous cow to die and we can collect the hide
-        setStatus("Waiting for previous cow to die...");
-        new Sleep(() -> true, 3000);
+
+        if(cowhide == null) {
+            return !ctx.myPlayer().isUnderAttack() &&
+                    !ctx.myPlayer().isMoving() &&
+                    // Prevents us from attacking a cow someone else is already in combat with
+                    cow.getAnimation() != Cow.DYING.getAnimation() &&
+                    cow.getAnimation() != Cow.ATTACKING.getAnimation();
+        }
 
         return  !ctx.myPlayer().isUnderAttack() &&
                 !ctx.myPlayer().isMoving() &&
+                !cowhide.isOnScreen() &&
+                // Prevents us from attacking a cow someone else is already in combat with
                 cow.getAnimation() != Cow.DYING.getAnimation() &&
-                cow.getAnimation() != Cow.ATTACKING.getAnimation(); // Prevents us from attacking a cow someone else is already in combat with
+                cow.getAnimation() != Cow.ATTACKING.getAnimation();
     }
 
     @Override
-    public void execute() {
+    public void execute() throws InterruptedException {
+        MethodProvider.sleep(4000);
         Entity cow = ctx.getNpcs().singleFilter(ctx.getNpcs().getAll(), (Filter<NPC>) npc -> npc.getName().equals("Cow"));
         setStatus("Finding new cow to attack...");
         if(cow != null)  {
             cow.interact("Attack");
             // Sleep for a few seconds while we wait for our player to get to the cow and start combat
-            new Sleep(() -> true, 3000);
+            MethodProvider.sleep(4000);
         }
     }
 }

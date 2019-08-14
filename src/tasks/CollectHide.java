@@ -1,9 +1,6 @@
 package tasks;
 
-import org.osbot.rs07.api.filter.Filter;
-import org.osbot.rs07.api.model.Entity;
 import org.osbot.rs07.api.model.GroundItem;
-import org.osbot.rs07.api.model.NPC;
 import org.osbot.rs07.script.MethodProvider;
 
 /**
@@ -20,11 +17,7 @@ public class CollectHide extends Task {
     public boolean activate() {
         // First we build an array of tiles around the player
         GroundItem cowhide = ctx.getGroundItems().closest("Cowhide");
-        ctx.log("Cowhide exists: " + cowhide != null);
         if(cowhide == null) return false;
-
-        ctx.log("Cowhide on screen: " + cowhide.isOnScreen());
-        ctx.log("Player moving: " + ctx.myPlayer().isMoving());
         // Won't try to collect cowhides while the player is currently in combat or running to collect the cowhide
         return cowhide.isOnScreen() && !ctx.myPlayer().isMoving();
     }

@@ -34,6 +34,6 @@ public abstract class Task{
         this.status = status;
     }
 
-    public abstract boolean activate();
-    public abstract void execute();
+    public abstract boolean activate() throws InterruptedException;
+    public abstract void execute() throws InterruptedException; // Throws exception so we can non conditionally sleep within the script
 }

@@ -17,10 +17,6 @@ public class Bank extends Task {
 
     @Override
     public boolean activate() {
-//        Item[] items = ctx.getInventory().getItems();
-//        for(Item i : items) {
-//            i.
-//        }
         NPC banker = ctx.getNpcs().singleFilter(ctx.getNpcs().getAll(), (Filter<NPC>) npc -> npc.getName().equalsIgnoreCase("Banker"));
 
         return ctx.getInventory().contains("Cowhide")
