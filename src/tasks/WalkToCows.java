@@ -10,13 +10,16 @@ import org.osbot.rs07.script.MethodProvider;
  * http://github.com/cbartram
  */
 public class WalkToCows extends Task {
-    public WalkToCows(MethodProvider ctx, String name) {
+    private final Location location;
+
+    public WalkToCows(MethodProvider ctx, String name, Location location) {
         super(ctx, name);
+        this.location = location;
     }
 
     @Override
     public boolean activate() {
-        return !Location.EAST.getArea().contains(ctx.myPlayer())
+        return !location.getArea().contains(ctx.myPlayer())
                 && !ctx.myPlayer().isMoving()
                 && !ctx.getInventory().contains("Cowhide");
     }
@@ -24,6 +27,6 @@ public class WalkToCows extends Task {
     @Override
     public void execute() {
         setStatus("Walking to Pasture...");
-        ctx.getWalking().webWalk(Location.EAST.getArea());
+        ctx.getWalking().webWalk(location.getArea());
     }
 }

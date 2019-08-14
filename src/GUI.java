@@ -3,6 +3,8 @@ import constants.Location;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+
 /**
  * GUI.java
  * Creates and shows the AeroCows GUI for collecting user input.
@@ -10,14 +12,16 @@ import java.awt.*;
  *
  * http://github.com/cbartram
  */
-
 public class GUI {
     private final JDialog mainDialog;
     private final JComboBox<Location> locationSelector;
+    private final JCheckBox outlineCheckbox;
 
     private boolean started;
+    private boolean showOutline = true;
+    private JCheckBox checkBox1;
 
-    public GUI() {
+    GUI() {
         mainDialog = new JDialog();
         mainDialog.setTitle("AeroCows");
         mainDialog.setModal(true);
@@ -28,24 +32,33 @@ public class GUI {
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
         mainDialog.getContentPane().add(mainPanel);
 
-        JPanel treeSelectionPanel = new JPanel();
-        treeSelectionPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        // Location Selector (East vs West)
+        JPanel locationSelectionPanel = new JPanel();
+        locationSelectionPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        JLabel treeSelectionLabel = new JLabel("Select tree:");
-        treeSelectionPanel.add(treeSelectionLabel);
+        JLabel locationSelectionLabel = new JLabel("Select Location:");
+        locationSelectionPanel.add(locationSelectionLabel);
 
         locationSelector = new JComboBox<>(Location.values());
-        treeSelectionPanel.add(locationSelector);
+        locationSelectionPanel.add(locationSelector);
 
-        mainPanel.add(treeSelectionPanel);
+        JPanel showPaintPanel = new JPanel();
+        showPaintPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+        // Show tile highlight checkbox
+        outlineCheckbox = new JCheckBox("Outline Tiles");
+        outlineCheckbox.setSelected(true);
+        outlineCheckbox.addItemListener((e) -> showOutline = e.getStateChange() != ItemEvent.DESELECTED);
 
         JButton startButton = new JButton("Start");
         startButton.addActionListener(e -> {
             started = true;
             close();
         });
-        mainPanel.add(startButton);
 
+        mainPanel.add(locationSelectionPanel);
+        mainPanel.add(startButton);
+        mainPanel.add(outlineCheckbox);
         mainDialog.pack();
     }
 
@@ -53,8 +66,16 @@ public class GUI {
         return started;
     }
 
+    public boolean isOpen() {
+        return mainDialog.isVisible();
+    }
+
     public Location getSelectedLocation() {
         return (Location) locationSelector.getSelectedItem();
+    }
+
+    public boolean shouldShowOutline() {
+        return showOutline;
     }
 
     public void open() {

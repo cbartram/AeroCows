@@ -1,12 +1,10 @@
 import org.osbot.rs07.api.filter.Filter;
 import org.osbot.rs07.api.map.Area;
 import org.osbot.rs07.api.map.Position;
-import org.osbot.rs07.api.map.constants.Banks;
-import org.osbot.rs07.api.model.Character;
+import org.osbot.rs07.api.model.GroundItem;
 import org.osbot.rs07.api.model.NPC;
 import org.osbot.rs07.api.ui.Message;
 import org.osbot.rs07.api.ui.Skill;
-import org.osbot.rs07.api.util.GraphicUtilities;
 import org.osbot.rs07.script.Script;
 import org.osbot.rs07.script.ScriptManifest;
 import tasks.AttackCow;
@@ -17,15 +15,18 @@ import tasks.Task;
 import tasks.WalkToCows;
 import util.Util;
 
+import javax.swing.*;
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@ScriptManifest(author = "Aerodude30", name = "AeroCows", info = "Kills cows and banks hides in Lumbridge", version = 1.0, logo = "")
+@ScriptManifest(author = "Aerodude30", name = "AeroCows", info = "Kills cows and banks hides in Lumbridge for quick cash", version = 1.0, logo = "logo.png")
 public final class AeroCows extends Script {
 	private List<Task> tasks = new ArrayList<>();
+	private GUI gui = new GUI();
 	private String status = "Initializing Script"; // Script status
 	private int cowHidesBanked = 0;
 	private long startTime;
@@ -40,12 +41,31 @@ public final class AeroCows extends Script {
 
 		// Add all our tasks to the task list
 		tasks.addAll(Arrays.asList(
-				new DepositHides(this, "Depositing Hides", cowHidesBanked),
+				// The order of these items tasks matter as the activation conditions will be evaluated
+				// in a loop in this order.
+				new DepositHides(this, "deposit-hides", cowHidesBanked),
 				new Bank(this, "Banking"),
-				new AttackCow(this,"Attack Cow"),
 				new CollectHide(this, "Collect Hide"),
-				new WalkToCows(this, "Walk to Cows")
+				new AttackCow(this,"Attack Cow"),
+				new WalkToCows(this, "Walk to Cows", gui.getSelectedLocation())
 		));
+
+		try {
+			SwingUtilities.invokeAndWait(() -> {
+				gui = new GUI();
+				gui.open();
+				status = "Waiting for GUI Input";
+			});
+		} catch (InterruptedException | InvocationTargetException e) {
+			e.printStackTrace();
+			stop();
+		}
+
+		// Stop the script if the user never clicked the start button
+		// but closed the GUI
+		if (!gui.isStarted()) {
+			stop();
+		}
 	}
 
 	@Override
@@ -55,6 +75,8 @@ public final class AeroCows extends Script {
 				if (task.activate()) {
 					status = task.getStatus();
 					task.execute();
+					// Update the count with hides deposited if the task was to deposit the hides
+					if(task.getName().equalsIgnoreCase("deposit-hides")) cowHidesBanked += 28 - getInventory().getEmptySlotCount();
 				}
 			}
 		} catch(InterruptedException e) {
@@ -67,6 +89,7 @@ public final class AeroCows extends Script {
 
 	@Override
 	public final void onExit() {
+		if(gui.isOpen()) gui.close();
 		log("Closing Script...");
 	}
 
@@ -97,9 +120,11 @@ public final class AeroCows extends Script {
 		g.drawString("Status: " + status, 10, 40);
 		g.drawString("Runtime: " + Util.formatTime(runTime), 10, 60);
 		g.drawString("Cowhides Banked: " + cowHidesBanked, 10, 80);
+		g.drawString("Gold Earned: " + 0, 10, 100);
+		g.drawString("Gold/Hour: " + 0, 10, 120);
 //		g.drawString("Levels Gained: " + getExperienceTracker().getGainedLevels(Skill.DEFENCE), 10, 80);
-		g.drawString("XP Gained: " + getExperienceTracker().getGainedXP(Skill.DEFENCE), 10, 100);
-		g.drawString("XP/Hour: " + getExperienceTracker().getGainedXPPerHour(Skill.DEFENCE), 10, 120);
+//		g.drawString("XP Gained: " + getExperienceTracker().getGainedXP(Skill.DEFENCE), 10, 100);
+//		g.drawString("XP/Hour: " + getExperienceTracker().getGainedXPPerHour(Skill.DEFENCE), 10, 120);
 		g.drawString( "TTL: " + Util.formatTime(getExperienceTracker().getTimeToLevel(Skill.DEFENCE)), 10, 140);
 
 
@@ -110,16 +135,28 @@ public final class AeroCows extends Script {
 		g.drawLine(pos.x + 5, pos.y + 5, pos.x - 5, pos.y - 5);
 
 
-		// Paint the tiles
-		g.setColor(Color.CYAN);
+		// Paint the tiles around the player
 		Area nearby = myPlayer().getArea(7);
-		List<NPC> cows = getNpcs().filter(getNpcs().getAll(),
-				(Filter<NPC>) cow -> cow.getName().equalsIgnoreCase("Cow"));
 
-		List<Position> cowPositions = cows.stream().map(cow -> cow.getPosition()).collect(Collectors.toList());
+		// Find all the cow positions
+		List<Position> cowPositions = getNpcs().filter(getNpcs().getAll(),
+				(Filter<NPC>) cow -> cow.getName().equalsIgnoreCase("Cow"))
+				.stream().map(cow -> cow.getPosition()).collect(Collectors.toList());
+
+		// Cowhide positions near the player
+		List<Position> cowhides = getGroundItems().filter(getGroundItems().getAll(), (Filter<GroundItem>) item -> item.getName().equalsIgnoreCase("Cowhide"))
+				.stream().map(hide -> hide.getPosition()).collect(Collectors.toList());
 
 		for(Position p : nearby.getPositions()) {
+			// Paint cows cyan
 			if(cowPositions.contains(p)) {
+				g.setColor(Color.CYAN);
+				g.drawPolygon(p.getPolygon(bot));
+			}
+
+			// Paint cowhides red
+			if(cowhides.contains(p)) {
+				g.setColor(Color.RED);
 				g.drawPolygon(p.getPolygon(bot));
 			}
 		}

@@ -38,4 +38,8 @@ public class DepositHides extends Task {
             ctx.getBank().depositAll("Cowhide");
         }
     }
+
+    public int getCowhidesBanked() {
+        return cowhidesBanked;
+    }
 }
