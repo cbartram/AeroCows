@@ -15,7 +15,7 @@ If you open your project structure you can add your sources to the left hand col
 image
 
 <p align="center">
-    <img src="https://i.imgur.com/sY1m5Oi.png />
+    <img src="https://i.imgur.com/sY1m5Oi.png" alt="intellij setup" />
 </p>
 
 ### Installing
