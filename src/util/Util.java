@@ -1,10 +1,13 @@
 package util;
 
+import org.osbot.rs07.script.MethodProvider;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Optional;
+import java.util.Random;
 
 /**
  * Util.java
@@ -25,18 +28,35 @@ public class Util {
         Optional<Integer> price = Optional.empty();
 
         try {
-            URL url = new URL("http://api.rsbuddy.com/grandExchange?a=guidePrice&i=" + id);
+            URL url = new URL("http://services.runescape.com/m=itemdb_oldschool/Cowhide/viewitem?obj=" + id);
             URLConnection con = url.openConnection();
             con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36");
             con.setUseCaches(true);
             BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String[] data = br.readLine().replace("{", "").replace("}", "").split(",");
+            String data;
+            while ((data = br.readLine()) != null) {
+                if(data.contains("Current Guide Price")) {
+                    int firstIndex = data.indexOf("title=\'");
+                    int lastIndex = data.lastIndexOf("\'");
+                    price = Optional.of(Integer.parseInt(data.substring(firstIndex + 7, lastIndex)));
+                }
+            }
             br.close();
-            price = Optional.of(Integer.parseInt(data[0].split(":")[1]));
         } catch(Exception e){
             e.printStackTrace();
         }
         return price;
+    }
+
+    /**
+     * Returns a random integer between the specified low and high integers
+     * @param low Integer lowest possible value returned from the random number generator
+     * @param high Integer highest possible value returned from the random number generator
+     * @return Integer between the specified range
+     */
+    public static int rand(int low, int high) {
+        Random r = new Random();
+        return r.nextInt(high - low) + low;
     }
 
     /**

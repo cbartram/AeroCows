@@ -46,6 +46,8 @@ public final class AeroCows extends Script {
 		Optional<Integer> price = Util.getPrice(COWHIDE_ID);
 		price.ifPresent(integer -> cowhidePrice = integer);
 
+		log("Cow hide price: " + cowhidePrice);
+
 		// Add all our tasks to the task list
 		tasks.addAll(Arrays.asList(
 				// The order of these items tasks matter as the activation conditions will be evaluated
@@ -81,9 +83,12 @@ public final class AeroCows extends Script {
 			for (Task task : tasks) {
 				if (task.activate()) {
 					status = task.getStatus();
-					task.execute();
 					// Update the count with hides deposited if the task was to deposit the hides
-					if(task.getName().equalsIgnoreCase("Depositing Hides")) cowHidesBanked += 28 - getInventory().getEmptySlotCount();
+					if(task.getName().equalsIgnoreCase("Depositing Hides"))  {
+						cowHidesBanked += 28 - getInventory().getEmptySlotCount();
+						log("Cowhides banked: " + cowHidesBanked);
+					}
+					task.execute();
 				}
 			}
 		} catch(InterruptedException e) {

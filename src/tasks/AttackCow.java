@@ -6,9 +6,7 @@ import org.osbot.rs07.api.model.Entity;
 import org.osbot.rs07.api.model.GroundItem;
 import org.osbot.rs07.api.model.NPC;
 import org.osbot.rs07.script.MethodProvider;
-import util.Sleep;
-
-import java.lang.reflect.Method;
+import util.Util;
 
 /**
  * tasks.AttackCow
@@ -47,13 +45,13 @@ public class AttackCow extends Task {
 
     @Override
     public void execute() throws InterruptedException {
-        MethodProvider.sleep(4000);
+        MethodProvider.sleep(Util.rand(3000, 4500));
         Entity cow = ctx.getNpcs().singleFilter(ctx.getNpcs().getAll(), (Filter<NPC>) npc -> npc.getName().equals("Cow"));
-        setStatus("Finding new cow to attack...");
+        setStatus("Finding new cow...");
         if(cow != null)  {
             cow.interact("Attack");
             // Sleep for a few seconds while we wait for our player to get to the cow and start combat
-            MethodProvider.sleep(4000);
+            MethodProvider.sleep(Util.rand(4000, 4500));
         }
     }
 }
