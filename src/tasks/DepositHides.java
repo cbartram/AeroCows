@@ -11,9 +11,11 @@ import org.osbot.rs07.script.MethodProvider;
  */
 public class DepositHides extends Task {
     private static final int BANK_BOOTH_ID = 27291;
+    private int cowhidesBanked;
 
-    public DepositHides(MethodProvider ctx, String name) {
+    public DepositHides(MethodProvider ctx, String name, int cowhidesBanked) {
         super(ctx, name);
+        this.cowhidesBanked = cowhidesBanked;
     }
 
     @Override
@@ -32,6 +34,7 @@ public class DepositHides extends Task {
         bankBooth.interact("Bank");
         MethodProvider.sleep(5000);
         if (ctx.getBank().isOpen()) {
+            cowhidesBanked += 28 - ctx.getInventory().getEmptySlotCount(); // TODO Assumes every item in inv is cowhide
             ctx.getBank().depositAll("Cowhide");
         }
     }

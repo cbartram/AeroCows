@@ -2,6 +2,7 @@ import org.osbot.rs07.api.filter.Filter;
 import org.osbot.rs07.api.map.Area;
 import org.osbot.rs07.api.map.Position;
 import org.osbot.rs07.api.map.constants.Banks;
+import org.osbot.rs07.api.model.Character;
 import org.osbot.rs07.api.model.NPC;
 import org.osbot.rs07.api.ui.Message;
 import org.osbot.rs07.api.ui.Skill;
@@ -20,11 +21,13 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ScriptManifest(author = "Aerodude30", name = "AeroCows", info = "Kills cows and banks hides in Lumbridge", version = 1.0, logo = "")
 public final class AeroCows extends Script {
 	private List<Task> tasks = new ArrayList<>();
 	private String status = "Initializing Script"; // Script status
+	private int cowHidesBanked = 0;
 	private long startTime;
 	private Skill[] skills = { Skill.ATTACK, Skill.DEFENCE, Skill.STRENGTH, Skill.RANGED, Skill.MAGIC };
 
@@ -37,7 +40,7 @@ public final class AeroCows extends Script {
 
 		// Add all our tasks to the task list
 		tasks.addAll(Arrays.asList(
-				new DepositHides(this, "Depositing Hides"),
+				new DepositHides(this, "Depositing Hides", cowHidesBanked),
 				new Bank(this, "Banking"),
 				new AttackCow(this,"Attack Cow"),
 				new CollectHide(this, "Collect Hide"),
@@ -93,7 +96,8 @@ public final class AeroCows extends Script {
 		g.setColor(Color.WHITE);
 		g.drawString("Status: " + status, 10, 40);
 		g.drawString("Runtime: " + Util.formatTime(runTime), 10, 60);
-		g.drawString("Levels Gained: " + getExperienceTracker().getGainedLevels(Skill.DEFENCE), 10, 80);
+		g.drawString("Cowhides Banked: " + cowHidesBanked, 10, 80);
+//		g.drawString("Levels Gained: " + getExperienceTracker().getGainedLevels(Skill.DEFENCE), 10, 80);
 		g.drawString("XP Gained: " + getExperienceTracker().getGainedXP(Skill.DEFENCE), 10, 100);
 		g.drawString("XP/Hour: " + getExperienceTracker().getGainedXPPerHour(Skill.DEFENCE), 10, 120);
 		g.drawString( "TTL: " + Util.formatTime(getExperienceTracker().getTimeToLevel(Skill.DEFENCE)), 10, 140);
@@ -109,11 +113,15 @@ public final class AeroCows extends Script {
 		// Paint the tiles
 		g.setColor(Color.CYAN);
 		Area nearby = myPlayer().getArea(7);
+		List<NPC> cows = getNpcs().filter(getNpcs().getAll(),
+				(Filter<NPC>) cow -> cow.getName().equalsIgnoreCase("Cow"));
 
+		List<Position> cowPositions = cows.stream().map(cow -> cow.getPosition()).collect(Collectors.toList());
 
-		Area bank = Banks.LUMBRIDGE_UPPER;
-		for(Position p : bank.getPositions()) {
-			g.drawPolygon(p.getPolygon(bot));
+		for(Position p : nearby.getPositions()) {
+			if(cowPositions.contains(p)) {
+				g.drawPolygon(p.getPolygon(bot));
+			}
 		}
 	}
 }
