@@ -21,16 +21,19 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-@ScriptManifest(author = "Aerodude30", name = "AeroCows", info = "Kills cows and banks hides in Lumbridge for quick cash", version = 1.0, logo = "logo.png")
+@ScriptManifest(author = "Aerodude30", name = "AeroCows", info = "Kills cows and banks hides in Lumbridge for quick cash", version = 1.0, logo = "https://i.imgur.com/CVhwm8l.png")
 public final class AeroCows extends Script {
 	private List<Task> tasks = new ArrayList<>();
 	private GUI gui = new GUI();
 	private String status = "Initializing Script"; // Script status
 	private int cowHidesBanked = 0;
 	private long startTime;
-	private Skill[] skills = { Skill.ATTACK, Skill.DEFENCE, Skill.STRENGTH, Skill.RANGED, Skill.MAGIC };
+	private int cowhidePrice = 0;
+	private static final Skill[] skills = { Skill.ATTACK, Skill.DEFENCE, Skill.STRENGTH, Skill.RANGED, Skill.MAGIC };
+	private static final int COWHIDE_ID = 1739;
 
 	@Override
 	public final void onStart() {
@@ -39,11 +42,15 @@ public final class AeroCows extends Script {
 			getExperienceTracker().start(skill);
 		}
 
+		// Cache current price of cowhide
+		Optional<Integer> price = Util.getPrice(COWHIDE_ID);
+		price.ifPresent(integer -> cowhidePrice = integer);
+
 		// Add all our tasks to the task list
 		tasks.addAll(Arrays.asList(
 				// The order of these items tasks matter as the activation conditions will be evaluated
 				// in a loop in this order.
-				new DepositHides(this, "deposit-hides", cowHidesBanked),
+				new DepositHides(this, "Depositing Hides"),
 				new Bank(this, "Banking"),
 				new CollectHide(this, "Collect Hide"),
 				new AttackCow(this,"Attack Cow"),
@@ -76,7 +83,7 @@ public final class AeroCows extends Script {
 					status = task.getStatus();
 					task.execute();
 					// Update the count with hides deposited if the task was to deposit the hides
-					if(task.getName().equalsIgnoreCase("deposit-hides")) cowHidesBanked += 28 - getInventory().getEmptySlotCount();
+					if(task.getName().equalsIgnoreCase("Depositing Hides")) cowHidesBanked += 28 - getInventory().getEmptySlotCount();
 				}
 			}
 		} catch(InterruptedException e) {
@@ -114,19 +121,15 @@ public final class AeroCows extends Script {
 		g.setFont(g.getFont().deriveFont(12.0f));
 
 		// Draw the main text
-		g.drawString("AeroCows", 10, 20);
+		g.drawString("A e r o  C o w s", 10, 20);
 
 		g.setColor(Color.WHITE);
 		g.drawString("Status: " + status, 10, 40);
 		g.drawString("Runtime: " + Util.formatTime(runTime), 10, 60);
 		g.drawString("Cowhides Banked: " + cowHidesBanked, 10, 80);
-		g.drawString("Gold Earned: " + 0, 10, 100);
-		g.drawString("Gold/Hour: " + 0, 10, 120);
-//		g.drawString("Levels Gained: " + getExperienceTracker().getGainedLevels(Skill.DEFENCE), 10, 80);
-//		g.drawString("XP Gained: " + getExperienceTracker().getGainedXP(Skill.DEFENCE), 10, 100);
-//		g.drawString("XP/Hour: " + getExperienceTracker().getGainedXPPerHour(Skill.DEFENCE), 10, 120);
+		g.drawString("Gold Earned: " + Util.formatValue(cowhidePrice * cowHidesBanked), 10, 100);
+		g.drawString("Gold/Hour: " + Util.goldPerHour(cowhidePrice * cowHidesBanked, runTime), 10, 120);
 		g.drawString( "TTL: " + Util.formatTime(getExperienceTracker().getTimeToLevel(Skill.DEFENCE)), 10, 140);
-
 
 		// Draw the mouse cursor
 		Point pos = getMouse().getPosition();
@@ -136,28 +139,30 @@ public final class AeroCows extends Script {
 
 
 		// Paint the tiles around the player
-		Area nearby = myPlayer().getArea(7);
+		if(gui.shouldShowOutline()) {
+			Area nearby = myPlayer().getArea(7);
 
-		// Find all the cow positions
-		List<Position> cowPositions = getNpcs().filter(getNpcs().getAll(),
-				(Filter<NPC>) cow -> cow.getName().equalsIgnoreCase("Cow"))
-				.stream().map(cow -> cow.getPosition()).collect(Collectors.toList());
+			// Find all the cow positions
+			List<Position> cowPositions = getNpcs().filter(getNpcs().getAll(),
+					(Filter<NPC>) cow -> cow.getName().equalsIgnoreCase("Cow"))
+					.stream().map(cow -> cow.getPosition()).collect(Collectors.toList());
 
-		// Cowhide positions near the player
-		List<Position> cowhides = getGroundItems().filter(getGroundItems().getAll(), (Filter<GroundItem>) item -> item.getName().equalsIgnoreCase("Cowhide"))
-				.stream().map(hide -> hide.getPosition()).collect(Collectors.toList());
+			// Cowhide positions near the player
+			List<Position> cowhides = getGroundItems().filter(getGroundItems().getAll(), (Filter<GroundItem>) item -> item.getName().equalsIgnoreCase("Cowhide"))
+					.stream().map(hide -> hide.getPosition()).collect(Collectors.toList());
 
-		for(Position p : nearby.getPositions()) {
-			// Paint cows cyan
-			if(cowPositions.contains(p)) {
-				g.setColor(Color.CYAN);
-				g.drawPolygon(p.getPolygon(bot));
-			}
+			for (Position p : nearby.getPositions()) {
+				// Paint cows cyan
+				if (cowPositions.contains(p)) {
+					g.setColor(Color.CYAN);
+					g.drawPolygon(p.getPolygon(bot));
+				}
 
-			// Paint cowhides red
-			if(cowhides.contains(p)) {
-				g.setColor(Color.RED);
-				g.drawPolygon(p.getPolygon(bot));
+				// Paint cowhides red
+				if (cowhides.contains(p)) {
+					g.setColor(Color.RED);
+					g.drawPolygon(p.getPolygon(bot));
+				}
 			}
 		}
 	}

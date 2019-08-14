@@ -15,11 +15,9 @@ import java.awt.event.ItemEvent;
 public class GUI {
     private final JDialog mainDialog;
     private final JComboBox<Location> locationSelector;
-    private final JCheckBox outlineCheckbox;
 
     private boolean started;
     private boolean showOutline = true;
-    private JCheckBox checkBox1;
 
     GUI() {
         mainDialog = new JDialog();
@@ -46,7 +44,7 @@ public class GUI {
         showPaintPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
         // Show tile highlight checkbox
-        outlineCheckbox = new JCheckBox("Outline Tiles");
+        JCheckBox outlineCheckbox = new JCheckBox("Outline Tiles");
         outlineCheckbox.setSelected(true);
         outlineCheckbox.addItemListener((e) -> showOutline = e.getStateChange() != ItemEvent.DESELECTED);
 
@@ -57,31 +55,54 @@ public class GUI {
         });
 
         mainPanel.add(locationSelectionPanel);
-        mainPanel.add(startButton);
         mainPanel.add(outlineCheckbox);
+        mainPanel.add(startButton);
         mainDialog.pack();
     }
 
+    /**
+     * Returns true when the script should be started
+     * @return Boolean
+     */
     public boolean isStarted() {
         return started;
     }
 
+    /**
+     * Boolean which returns true if the GUI dialog is open
+     * and false otherwise
+     * @return Boolean
+     */
     public boolean isOpen() {
         return mainDialog.isVisible();
     }
 
+    /**
+     * Returns the selected location object from the GUI
+     * @return Location
+     */
     public Location getSelectedLocation() {
         return (Location) locationSelector.getSelectedItem();
     }
 
+    /**
+     * Returns a boolean of true if the outlines should be shown and false otherwise
+     * @return Boolean
+     */
     public boolean shouldShowOutline() {
         return showOutline;
     }
 
+    /**
+     * Opens the GUI
+     */
     public void open() {
         mainDialog.setVisible(true);
     }
 
+    /**
+     * Closes the GUI
+     */
     public void close() {
         mainDialog.setVisible(false);
         mainDialog.dispose();
