@@ -4,8 +4,9 @@ import org.osbot.rs07.api.model.GroundItem;
 import org.osbot.rs07.script.MethodProvider;
 
 /**
- * Created by christianbartram on 2019-08-13.
- * <p>
+ * Collects nearby cowhides from the ground
+ * when they are visible
+ * Created by cbartram on 2019-08-13.
  * http://github.com/cbartram
  */
 public class CollectHide extends Task {
@@ -23,9 +24,10 @@ public class CollectHide extends Task {
     }
 
     @Override
-    public void execute() {
+    public void execute() throws InterruptedException {
         setStatus("Collecting cowhide");
         GroundItem cowhide = ctx.getGroundItems().closest("Cowhide");
         cowhide.interact("Take");
+        MethodProvider.sleep(1000);
     }
 }

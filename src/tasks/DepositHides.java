@@ -34,7 +34,7 @@ public class DepositHides extends Task {
         bankBooth.interact("Bank");
         MethodProvider.sleep(5000);
         if (ctx.getBank().isOpen()) {
-            cowhidesBanked += 28 - ctx.getInventory().getEmptySlotCount(); // TODO Assumes every item in inv is cowhide
+            this.cowhidesBanked += 28 - ctx.getInventory().getEmptySlotCount(); // TODO Assumes every item in inv is cowhide
             ctx.getBank().depositAll("Cowhide");
         }
     }
