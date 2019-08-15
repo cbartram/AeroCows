@@ -9,7 +9,7 @@ import org.osbot.rs07.script.MethodProvider;
 import util.Util;
 
 /**
- * tasks.AttackCow
+ * AttackCow.java
  * Finds and fights cows in the nearby vicinity. It will also
  * collect their
  * Created by cbartram on 2019-08-09.
@@ -38,7 +38,6 @@ public class AttackCow extends Task {
         return  !ctx.myPlayer().isUnderAttack() &&
                 !ctx.myPlayer().isMoving() &&
                 !cowhide.isOnScreen() &&
-                // Prevents us from attacking a cow someone else is already in combat with
                 cow.getAnimation() != Cow.DYING.getAnimation() &&
                 cow.getAnimation() != Cow.ATTACKING.getAnimation();
     }

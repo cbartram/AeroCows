@@ -10,6 +10,7 @@ import org.osbot.rs07.script.MethodProvider;
  * http://github.com/cbartram
  */
 public class WalkToCows extends Task {
+    // Holds a reference to the Location Enum for each cow location
     private final Location location;
 
     public WalkToCows(MethodProvider ctx, String name, Location location) {
