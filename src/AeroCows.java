@@ -125,7 +125,7 @@ public final class AeroCows extends Script {
 
 		g.setFont(g.getFont().deriveFont(12.0f));
 
-		// Draw the main text
+		// Draw the main text and space is out bc its blurry
 		g.drawString("A e r o  C o w s", 10, 20);
 
 		g.setColor(Color.WHITE);
@@ -143,7 +143,8 @@ public final class AeroCows extends Script {
 		g.drawLine(pos.x + 5, pos.y + 5, pos.x - 5, pos.y - 5);
 
 
-		// Paint the tiles around the player
+		// Paint the tiles around the player only if they want to see it
+		// it could be annoying for some players
 		if(gui.shouldShowOutline()) {
 			Area nearby = myPlayer().getArea(7);
 
